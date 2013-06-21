@@ -1,0 +1,12 @@
+\subsection{容斥}
+		\begin{lstlisting}[language=c++]
+ll lim;
+ll dfs(int pos,ll d){
+	ll ret = 0;
+	while(pos<totpri&&prime[pos] <= k&& prime[pos] * d<=lim){
+		ret += lim/(prime[pos]*d) - dfs(pos+1,d*prime[pos]);
+		pos++;
+	}
+	return ret;
+}
+	\end{lstlisting}

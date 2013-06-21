@@ -1,0 +1,167 @@
+\subsection{组合数}
+	\subsubsection{暴力求解}
+		\begin{lstlisting}[language=c++]
+C(n,m)=n*(n-1)*...*(n-m+1)/m!，n<=15
+int Combination(int n, int m)
+{
+	const int M = 10007;
+	int ans = 1;
+	for(int i=n; i>=(n-m+1); --i)
+		ans *= i;
+	while(m)
+		ans /= m--;
+	return ans % M;
+}
+		\end{lstlisting}
+	\subsubsection{打表}
+		\begin{lstlisting}[language=c++]
+C(n,m)=C(n-1,m-1)+C(n-1,m)，n<=10,000
+const int M = 10007;
+const int N = 1000;
+ll C[N][N];
+void initc(){
+	int i,j;
+	for(i=0; i<N; ++i){
+		C[0][i] = 0;
+		C[i][0] = 1;
+	}
+	for(i=1; i<N; ++i){
+		for(j=1; j<N; ++j)
+			C[i][j] = (C[i-1][j] + C[i-1][j-1]) % MOD;
+	}
+}
+		\end{lstlisting}
+	\subsubsection{质因数分解}
+	C(n,m)=n!/(m!*(n-m)!)，C(n,m)=p1a1-b1-c1p2a2-b2-c2pkak-bk-ck,n<=10,000,000\\
+		\begin{lstlisting}[language=c++]
+//用筛法生成素数
+const int MAXN = 1000000;
+bool arr[MAXN+1] = {false};
+vector<int> produce_prim_number(){
+	vector<int> prim;
+	prim.push_back(2);
+	int i,j;
+	for(i=3; i*i<=MAXN; i+=2){
+		if(!arr[i]){
+			prim.push_back(i);
+			for(j=i*i; j<=MAXN; j+=i)
+			arr[j] = true;
+		}
+	}
+	while(i<=MAXN){
+		if(!arr[i])
+		prim.push_back(i);
+		i+=2;
+	}
+	return prim;
+}
+
+//计算n!中素因子p的指数
+int Cal(int x, int p){
+	int ans = 0;
+	long long rec = p;
+	while(x>=rec){
+		ans += x/rec;
+		rec *= p;
+	}
+	return ans;
+}
+
+//计算n的k次方对M取模，二分法
+int Pow(long long n, int k, int M){
+	long long ans = 1;
+	while(k){
+		if(k&1){
+			ans = (ans * n) % M;
+		}
+		n = (n * n) % M;
+		k >>= 1;
+	}
+	return ans;
+}
+
+//计算C(n,m)
+int Combination(int n, int m){
+    const int M = 10007;
+	vector<int> prim = produce_prim_number();
+	long long ans = 1;
+	int num;
+	for(int i=0; i<prim.size() && prim[i]<=n; ++i){
+		num = Cal(n, prim[i]) - Cal(m, prim[i]) - Cal(n-m, prim[i]);
+		ans = (ans * Pow(prim[i], num, M)) % M;
+	}
+	return ans;
+}
+		\end{lstlisting}
+	\subsubsection{Lucas}
+	/*定理，将m,n化为p进制,有:C(n,m)=C(n0,m0)*C(n1,m1)...(mod p)，算一个不是很大的C(n,m)\%p,p为素数，化为线性同余方程,用扩展的欧几里德定理求解，n在int范围内，修改一下可以满足long long范围内。*/\\
+		\begin{lstlisting}[language=c++]	
+
+ 
+const int M = 10007;
+int ff[M+5];  //打表，记录n!，避免重复计算
+
+//求最大公因数
+int gcd(int a,int b){
+    if(b==0)
+		return a;
+    else
+		return gcd(b,a%b);
+}
+
+//解线性同余方程，扩展欧几里德定理
+int x,y;
+void Extended_gcd(int a,int b){
+    if(b==0)    {
+       x=1;
+       y=0;
+    }
+    else{
+       Extended_gcd(b,a%b);
+       long t=x;
+       x=y;
+       y=t-(a/b)*y;
+    }
+}
+
+//计算不大的C(n,m)
+int C(int a,int b){
+    if(b>a)
+	return 0;
+    b=(ff[a-b]*ff[b])%M;
+    a=ff[a];
+    int c=gcd(a,b);
+    a/=c;
+    b/=c;
+    Extended_gcd(b,M);
+    x=(x+M)%M;
+    x=(x*a)%M;
+    return x;
+}
+
+//Lucas定理
+int Combination(int n, int m){
+    int ans=1;
+	int a,b;
+	while(m||n){
+	         a=n%M;
+		b=m%M;
+		n/=M;
+		m/=M;
+		ans=(ans*C(a,b))%M;
+	}
+	return ans;
+}
+
+int main(void){
+    int i,m,n;
+	ff[0]=1;
+	for(i=1;i<=M;i++)  //预计算n!
+	ff[i]=(ff[i-1]*i)%M;
+	
+	scanf("%d%d",&n, &m);
+	printf("%d\n",func(n,m));
+	
+	return 0;
+}
+		\end{lstlisting}

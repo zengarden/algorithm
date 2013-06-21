@@ -1,0 +1,71 @@
+\subsection{Dinic}
+		\begin{lstlisting}[language=c++]
+const int pN=2000,eN=3000000;
+struct Edge{
+	int u,v,nxt;
+	int w;
+}e[eN];
+
+int en,head[pN];
+
+void init(){
+	memset(head,-1,sizeof(head));
+	en=0;
+}	
+void add(int u,int v,int w){
+	e[en].u=u;e[en].v=v;e[en].w=w;e[en].nxt=head[u];head[u]=en++;
+	e[en].u=v;e[en].v=u;e[en].w=0;e[en].nxt=head[v];head[v]=en++;
+}
+
+int cur[pN],sta[pN],dep[pN];     
+int max_flow(int n,int s,int t){   
+	int tr,flow = 0;
+	int i,u,v,f,r,top;  //f即是front 队列的头部
+	int j;
+	while(1){
+		memset(dep,-1,n*sizeof(int));
+		for( f = dep[ sta[0] = s ] = 0 ,r = 1;f != r;){
+			for( u = sta[f++],i = head[u];i != -1;i = e[i].nxt){
+				if (e[i].w && dep[ v = e[i].v] == -1){
+					dep[v] = dep[u] +1;
+					sta[r ++] = v; //将v入队列  向后标号法
+					if (v == t){
+						f = r;
+						break;
+					}
+				}	
+			}
+		}
+		if (-1 == dep[t]) break;
+		memcpy(cur,head,n*sizeof(int));
+		for (i = s,top = 0; ;){
+			if (i == t){
+				for( j =0 , tr = inf; j < top; ++j){  //找出一条增广路的最小边权
+					if (e[ sta[j] ].w < tr){
+						tr = e[ sta[ f = j ] ].w;  //一个简单优化每一次不用从头开始找增广
+					}
+				}
+				for( j = 0;j < top; ++j){
+					e[ sta[j] ].w -= tr;
+					e[ sta[j]^1].w += tr;
+				}
+				flow += tr;
+				i = e[ sta[top = f] ].u;
+			}
+			for(j = cur[i]; cur[i] != -1; j = cur[i] = e[cur[i]].nxt)  //i为当前的栈顶元素
+				if (e[j].w && dep[i] +1 == dep[e[j].v]) break;  //找到了一条路径最短的增广边
+			
+			if (cur[i] != -1){   //就是这个点还有出度
+				sta[ top++ ] = cur[i];
+				i = e[ cur[i] ].v;
+			}
+			else{
+				if (top == 0) break;   
+				dep[i] = -1;           
+				i = e[sta[--top]].u;  
+			}
+		}	
+	}
+	return flow;
+}
+	\end{lstlisting}

@@ -1,0 +1,69 @@
+\subsection{费用流}
+		\begin{lstlisting}[language=c++]
+const int inf = 0xffffff;
+#define M 200001
+#define maxx 2000
+class Mcmf{
+public:
+	struct T{
+		int u, v, w;
+		int nxt, cost;
+	}edge[M];
+	int en;
+	int visit[M], pre[M], dist[M], que[M], vis[M], pos[M];
+	void init(){
+		memset(vis,-1,sizeof(vis));
+		en=0;
+	}
+	void add(int u, int v, int w, int cost)  
+	{
+		edge[en].u = u,edge[en].v = v, edge[en].w = w, edge[en].cost = cost;
+		edge[en].nxt = vis[u], vis[u] = en++;
+		edge[en].u= v, edge[en].v = u, edge[en].w = 0, edge[en].cost = -cost;
+		edge[en].nxt = vis[v], vis[v] = en++;
+	}
+	bool spfa(int n,int s,int t){
+		int v,k;
+		for (int i = 0;i <= n; i++){
+			pre[i] = -1,visit[i] = 0;
+		}
+		int f = 0,r = 0;	
+		for (int i = 0;i <= n; ++i) dist[i] = -1;
+		que[r ++] = s;pre[s] = s;dist[s] = 0;visit[s] = 1;
+		while(f != r){
+			int u = que[f ++];
+			visit[u] = 0;
+			for (k = vis[u] ;k != -1;k = edge[k].nxt){   
+				v = edge[k].v;
+				if (edge[k].w && dist[u] + edge[k].cost > dist[v]){
+					dist[v] = dist[u] + edge[k].cost;
+					pre[v] = u;
+					pos[v] = k;   //是哪一条边到大的v 巧妙呀 值得学习一下~~~
+					if (! visit[v]){
+						visit[v] = 1;
+						que[r ++] = v;
+					}
+				}
+			}
+		}
+		if (pre[t] != -1 &&dist[t] > -1) return 1;
+		return 0;
+	}
+	int mnCostFlow(int n,int s,int t){
+		if (s == t){}
+		int flow =0,cost =0;
+		while(spfa(n,s,t)){
+			int u,mn = inf;
+			for( u = t;u != s; u = pre[u]) 
+				if (mn > edge[pos[u]].w) mn = edge[pos[u]].w;
+			flow += mn;
+			cost += dist[t] * mn;
+			for(u = t;u != s;u = pre[u]){
+				edge[pos[u]].w -= mn;
+				edge[pos[u]^1].w += mn;
+			}
+		}
+		return cost;
+	}
+}mcf;
+	\end{lstlisting}

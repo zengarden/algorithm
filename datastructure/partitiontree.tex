@@ -1,0 +1,74 @@
+\subsection{划分树}
+		\begin{lstlisting}[language=c++]
+int a[100001];
+int b[21][100001];
+int sum[21][100001];   //sum[i]表示l--i这些点中有多少个进入了左子树。
+int n,m;
+
+void build(int l,int r,int d){    //d代表在树上第几层
+	if (l==r) return;
+	int i,mid=(l+r)>>1,id1=l,id2=mid+1,midsum=0;
+	for (i=mid;i>=l&&a[i]==a[mid];i--)midsum+=1;
+	for (i=l;i<=r;i++){
+		sum[d][i]=i==l?0:sum[d][i-1];
+		if (b[d][i]<a[mid]){
+			b[d+1][id1++]=b[d][i];
+			sum[d][i]+=1;
+		}
+		else if(b[d][i]==a[mid]&&midsum){
+			midsum-=1;
+			b[d+1][id1++]=b[d][i];
+			sum[d][i]+=1;
+		}
+		else b[d+1][id2++]=b[d][i];
+	}
+	build(l,mid,d+1);
+	build(mid+1,r,d+1);
+}
+
+int search(int x,int y,int k){
+	int l=1,r=n,d=0;
+	int ls,rs,mid;
+	while (x!=y){
+		ls=x==l?0:sum[d][x-1];    //因为要包含x
+		rs=sum[d][y];
+		mid=(l+r)>>1;
+		if (k<=rs-ls) {        //在左子树上
+			x=l+ls;
+			y=l+rs-1;
+			r=mid;
+		}
+		else                 //在右子树上
+		{
+			x=mid+1+x-l-ls;  // (x-l-ls)是指处在x前面且进入右子树的个数，因为在子树中保持位置顺序不变，所以在右子树中x前面有(x-l-ls)个数。
+			y=mid+1+y-l-rs;
+			k-=rs-ls;
+			l=mid+1;
+		}
+		d+=1;
+	}
+	return b[d][x];
+}
+
+int main(){
+	freopen("in.txt","r",stdin); 
+	int cnt=1;
+	while(scanf("%d",&n)!=EOF){
+		int i,x,y,t;
+		for (i=1;i<=n;i++){
+			scanf("%d",&t);
+			a[i]=b[0][i]=t;
+		}
+		sort(a+1,a+n+1);
+		build(1,n,0);
+		scanf("%d",&m);
+		printf("Case %d:\n",cnt++);
+		while(m--){
+			scanf("%d%d",&x,&y);
+			int k=(y-x+1)/2+1;
+			printf("%d\n",search(x,y,k));
+		}
+	}
+	return 0;
+}
+	\end{lstlisting}

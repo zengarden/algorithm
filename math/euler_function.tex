@@ -1,0 +1,65 @@
+\subsection{欧拉函数}
+	\subsubsection{一般的求法}
+		\begin{lstlisting}[language=c++]
+const int N = 100010;
+bool is_prime[N];
+ll phi[N];
+ll prime[N];
+void init(){
+	ll i, j, k = 0;
+	phi[1] = 1;
+	for(i = 2; i < N; i++){
+		if(is_prime[i] == false){
+			prime[k++] = i;
+			phi[i] = i-1;
+		}
+		for(j = 0; j<k && i*prime[j]<N; j++){
+			is_prime[ i*prime[j] ] = true;
+			if(i%prime[j] == 0){
+				phi[ i*prime[j] ] = phi[i] * prime[j];
+				break;
+			}
+			else phi[ i*prime[j] ] = phi[i] * (prime[j]-1);
+		}
+	}
+}
+		\end{lstlisting}
+	\subsubsection{递推}
+		\begin{lstlisting}[language=c++]
+for (i = 1; i <= maxn; i++) phi[i] = i; 
+for (i = 2; i <= maxn; i += 2) phi[i] /= 2; 
+for (i = 3; i <= maxn; i += 2) if(phi[i] == i) { 
+    for (j = i; j <= maxn; j += i) 
+        phi[j] = phi[j] / i * (i - 1); 
+}
+		\end{lstlisting}
+	\subsubsection{单独求}
+		\begin{lstlisting}[language=c++]
+ll Euler_Phi(ll n)
+{
+	ll t = n,p = n;
+	ll sq = sqrt (n);
+
+	for (int i=0;prime[i]<=sq && i<totpri;i++)
+	{
+		if (t%prime[i]==0)
+		{
+			p = p/prime[i]*(prime[i]-1);
+
+			while (t%prime[i]==0)
+				t/=prime[i];
+
+			//sq = sqrt(t);
+		}
+
+		if (t == 1)
+			break;
+	}
+
+	if (t > 1)
+		p = p/t*(t-1);
+
+	return p;
+}
+		\end{lstlisting}
+	

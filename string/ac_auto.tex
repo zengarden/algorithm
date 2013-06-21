@@ -1,0 +1,92 @@
+\subsection{ac自动机}
+		\begin{lstlisting}[language=c++]	
+char str[2000010];
+char c[1010][55];
+
+namespace AC {
+const int dict = 26;
+const int root = 0;
+const int maxn = 3000000;
+struct node {
+    int son[dict], fail, idx;
+} tree[maxn];
+int apr[10010];
+bool vis[3000000];
+int sz;
+int initNode(int idx) {
+    memset(tree[idx].son, 0, sizeof(tree[idx]));
+    tree[idx].fail = tree[idx].idx = 0;
+    return idx;
+}
+void init() {
+    sz = initNode(0);
+    memset(apr, 0, sizeof(apr));
+}
+void ins(char *s, int idx) {
+    int cur = root, t;
+    while (*s) {
+        t = *s - 'A';
+        if (!tree[cur].son[t]) tree[cur].son[t] = initNode(++sz);
+        cur = tree[cur].son[t];
+        s++;
+    }
+    tree[cur].idx = idx;
+}
+queue<int> q;
+void buildac() {
+    while(!q.empty()) q.pop();
+    int i, cur, nxt, f;
+    for ( i = 0 ; i < dict ; i++ )
+        if (tree[root].son[i])	q.push(tree[root].son[i]);
+
+    while (!q.empty()) {
+        cur = q.front();
+        q.pop();
+        f = tree[cur].fail;
+        for ( i = 0 ; i < dict ; i++ )
+            if (tree[cur].son[i]) {
+                nxt  = tree[cur].son[i];
+                tree[nxt].fail = tree[f].son[i];
+                q.push(nxt);
+            } else	tree[cur].son[i] = tree[f].son[i];
+    }
+}
+void search(char *s) {
+    int i, cur = 0;
+    for ( ; *s ; s++ ) {
+        if( (*s) >= 'A' && (*s) <= 'Z' ) {
+            cur = tree[cur].son[*s - 'A'];
+            for ( i = cur ; i ; i = tree[i].fail ) { //vis用于优化
+                apr[tree[i].idx]++;
+            }
+        } else {
+            cur = 0;
+        }
+    }
+    for(int i = 1; i <= 1010; ++i) {
+        if(apr[i]) {
+            printf("%s: %d\n", c[i], apr[i]);
+        }
+    }
+}
+};
+
+int main() {
+  //  freopen("input.txt", "r", stdin);
+    int n;
+
+    while(scanf("%d", &n) != EOF) {
+        AC::init();
+        for(int i = 1; i <= n ; ++i) {
+            scanf("%s", c[i]);
+            AC::ins(c[i], i);
+        }
+        AC::buildac();
+        getchar();
+        gets(str);
+        AC::search(str);
+    }
+
+    return 0;
+}
+		\end{lstlisting}

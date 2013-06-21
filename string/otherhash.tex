@@ -1,0 +1,13 @@
+\subsection{可获取任意段字符串的hash}
+		\begin{lstlisting}[language=c++]
+unsigned int S[N],P[N];
+void init(char *str,int n){
+	S[0] = 1,P[0] = 1;
+	fr(i ,1, n+1) P[i] =P[i-1]*Z;  //z是base
+	fr(i , 0 ,n) S[i+1] = S[i]*Z+(str[i]-'a'+1);
+}
+int H(PLD x){  //这里获得一段的hash值  x.l r 收尾位置
+	int l=x.l; int r=x.r;
+	return S[r+1] - S[l] * P[r-l+1];  
+}
+		\end{lstlisting}

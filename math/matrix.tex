@@ -1,0 +1,67 @@
+\subsection{矩阵类}
+		\begin{lstlisting}[language=c++]
+ll MOD=10000;
+template<int MAXN=1010,int MAXM=1010, typename T = int>
+struct Mat{
+    int n,m;
+    T a[MAXN][MAXM];
+    Mat(int _n=0,int _m=0):n(_n),m(_m){}
+    void clear(){
+        memset(a,0,sizeof(a));
+    }
+    void identity(){
+        memset(a,0,sizeof(a));
+        fr(i , 0 ,n){
+            a[i][i] = 1;
+        }
+    }
+    Mat operator + (const Mat &b) const{
+        Mat tmp(n,m);
+        for(int i = 0;i<n;++i){
+            for(int j = 0;j<m;++j){
+                tmp.a[i][j] = a[i][j] + b.a[i][j];
+            }
+        }
+        return tmp;
+    }
+    Mat operator - (const Mat &b) const{
+        Mat tmp(n,m);
+        for(int i = 0;i<n;++i){
+            for(int j = 0;j<m;++j){
+                tmp.a[i][j] = a[i][j] - b.a[i][j];
+            }
+        }
+        return tmp;
+    }
+    Mat operator * (const Mat &b) const{
+        Mat tmp(n,m);
+        tmp.clear();
+        for(int i = 0;i<n;++i){
+            for(int j = 0;j<n;++j)
+                for(int k = 0;k < n;++k){
+                tmp.a[i][j] = (tmp.a[i][j] + a[i][k] * b.a[k][j]) % MOD;
+            }
+        }
+        return tmp;
+    }
+    Mat operator ^ (int b) {
+        Mat ret(n,m);
+        ret.identity();
+        while(b){
+            if(b&1)
+                ret = (*this)*ret;
+            (*this) = (*this)*(*this);
+            b>>=1;
+        }
+        return ret;
+    }
+    void disp(){
+        fr(i , 0 ,n){
+            fr(j , 0 ,m){
+                printf("%d ",a[i][j]);
+            }
+            puts("");
+        }
+    }
+};
+		\end{lstlisting}

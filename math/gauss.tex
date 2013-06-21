@@ -1,0 +1,73 @@
+\subsection{高斯消元}
+	\subsubsection{模二消元}
+		\begin{lstlisting}[language=c++]
+int gauss(int n){
+	int r,c;
+	for(r = 0, c=0;r<n,c<n;++r,++c){
+		int p = r;
+		fr(i , r+1,n){
+			if(a[i][c] > a[p][c]) p = i;
+		}
+		if (p != r){
+			fr(i , c,n+1){
+				swap(a[p][i],a[r][i]);
+			}
+		}
+		if(a[r][c] == 0){
+			r--;continue;
+		}
+		fr(i , 0,n){
+			if (a[i][c] == 0||i == r) continue;
+			fr(j,c,n+1) a[i][j] = a[i][j]^a[r][j];
+		}
+	}
+	fr(i , r,n) if (a[i][n]) return -1;
+	return n-r;
+}
+		\end{lstlisting}
+	\subsubsection{浮点}
+		\begin{lstlisting}[language=c++]
+const double eps = 1e-12;
+const int MAXN = 30;
+inline int gauss(double a[][4],bool l[],double ans[],const int &n){
+    int res = 0,r = 0;
+    for(int i = 0;i < n;++i) l[i] = false;
+    for(int i = 0;i < n;++i) {
+        for(int j = r;j < n;++j){
+            if( fabs(a[j][i]) > eps) {
+                for(int k = i; k<= n;++k) swap(a[j][k],  a[r][k]);
+                break;
+            }
+        }
+        if( fabs(a[r][i]) < eps){
+            ++res;
+            continue;
+        }
+        for(int j = 0; j< n;++j){
+            if( j !=r&& fabs(a[j][i])>eps){
+                double tmp = a[j][i] / a[r][i];
+                for(int k = i ; k<=n ; ++k){
+                    a[j][k] -= tmp * a[r][k];
+                }
+            }
+        }
+        l[i] = true;++r;
+    }
+
+    fr(i ,0 ,n){
+        fr(j , 0,n+1){
+            printf("%lf ",a[i][j]);
+        }
+        puts("");
+    }
+    for(int i = 0; i< n ;++i){  //有问题
+        if (l[i])
+            for(int j = 0; j< n; ++j){
+                if (fabs(a[j][i]) > 0){
+                    ans[i] = a[j][n] / a[j][i];
+                }
+            }
+    }
+    return res;
+}
+		\end{lstlisting}

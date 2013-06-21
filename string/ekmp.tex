@@ -1,0 +1,56 @@
+\subsection{kmp}
+	q是B串继续向后匹配的指针，p是A串继续向后匹配的指针，也是曾经到达过的最远位置+1\\
+	q在每次计算后会减小1，直观的讲就是B串向后错了一位
+	
+		\begin{lstlisting}[language=c++]
+const int N=100010;
+
+int len_s,len_t;
+int nxt[N],extend[N];
+char S[N],T[N];
+void build_nxt()
+{
+	int k, q, p, a;
+	nxt[0] = len_t;
+	for (k = 1, q = -1; k < len_t; k ++, q --) {
+		if (q < 0 || k + nxt[k - a] >= p) {
+			if (q < 0)q = 0, p = k;
+			while (p < len_t && T[p] == T[q]) {
+				p ++, q ++;
+			}
+			nxt[k] = q, a = k;
+		}
+		else {
+			nxt[k] = nxt[k - a];
+		}
+	}
+}
+void extend_KMP()
+{
+	int k, q, p, a;
+	for (k = 0, q = -1; k < len_s; k ++, q --) {
+		if (q < 0 || k + nxt[k - a] >= p) {
+			if (q < 0)q = 0, p = k;
+			while (p < len_s && q < len_t && S[p] == T[q]) {
+				p ++, q ++;
+			}
+			extend[k] = q, a = k;
+		}
+		else {
+			extend[k] = nxt[k - a];
+		}
+	}
+}
+int main(){
+	fi;
+	scanf("%s",S);
+	scanf("%s",T);
+	
+	len_t=strlen(T);
+	len_s=strlen(S);
+	build_nxt();
+	extend_KMP();
+
+	return 0;
+}
+		\end{lstlisting}

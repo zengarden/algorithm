@@ -1,0 +1,63 @@
+\subsection{rmq2d}
+		\begin{lstlisting}[language=c++]
+const dl _eps=1e-6;
+const int N = 301;
+int t,n;
+int dp[N][N][9][9];
+void in(int &a)
+{
+	char c,f;
+	while(((f=getchar())<'0'||f>'9')&&f!='-');
+	c=(f=='-')?getchar():f;
+	for(a=0;c>='0'&&c<='9';c=getchar())a=a*10+c-'0';
+	if(f=='-')a=-a;
+}
+void initrmq(){
+	int i,j;
+	int m = log(double(n)) / log(2.0);
+	fr(i,0,m+1){
+		fr(j,0,m+1){
+			if (i==0 && j==0) continue;
+			for(int r = 0; r+(1<<i)-1 < n; ++r){
+				for(int c = 0; c+(1<<j)-1 < n; ++c){
+					if(i == 0) dp[r][c][i][j] = min(dp[r][c][i][j-1] , dp[r][c+(1<<(j-1))][i][j-1]); 
+					else dp[r][c][i][j] = min(dp[r][c][i-1][j] , dp[r+(1<<(i-1))][c][i-1][j]);
+				}
+			}
+		}
+	}
+}
+int rmq_2d_query(int X1,int Y1,int X2,int Y2){
+	int x = log(double(X2 - X1 +1)) / log(2.0); 
+	int y = log(double(Y2 - Y1 +1)) / log(2.0); 
+	int m1 = dp[X1][Y1][x][y];
+	int m2 = dp[X2-(1<<x)+1][Y1][x][y];
+	int m3 = dp[X1][Y2-(1<<y)+1][x][y];
+	int m4 = dp[X2-(1<<x)+1][Y2-(1<<y)+1][x][y];
+	return min(min(m1,m2),min(m3,m4));
+}
+
+void inp(){
+	int i,j,m,X1,Y1,X2,Y2;
+	in(n);
+	fr(i , 0,n){
+		fr(j,0,n){
+			in(dp[i][j][0][0]);
+		}
+	}
+	initrmq();
+	sfint(m);
+	while(m--){
+		in(X1);in(Y1);in(X2);in(Y2);
+		printf("%d\n",rmq_2d_query(X1-1,Y1-1,X2-1,Y2-1));
+	}
+}
+int main(){
+	fi;
+	sfint(t);
+	while(t--){
+		inp();
+	}
+	return 0;
+}
+	\end{lstlisting}

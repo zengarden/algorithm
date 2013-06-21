@@ -1,0 +1,22 @@
+\subsection{spfa}
+		\begin{lstlisting}[language=c++]
+bool spfa(int s){
+	for(i = 1; i <= n; ++i) d[i] = INF;
+	d[s] = 0;
+	q.push(s);
+	while(q不为空){
+		u = q.front();
+		q.pop();
+		for all edge(u, v, e)
+			if(d[v] > d[u] + e){
+				d[v] = d[u] + e;
+				if(v不在q中) {  //这里用vst
+					q.push(v);
+					if(v入队次数==n) return false;
+				}
+			}
+		退出队列
+	}
+	return true;
+}
+	\end{lstlisting}

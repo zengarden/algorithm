@@ -1,0 +1,53 @@
+\subsection{后缀自动机}
+		\begin{lstlisting}[language=c++]
+const int  maxn=2000010;
+const int kinds=26;
+
+char ch[maxn];
+
+struct Sam{
+	Sam *son[kinds],*fa;
+	int l ,cnt;
+	bool vst;
+}a[maxn],*head,*last;
+
+int top=-1;
+void add(int x){
+	Sam *p=&a[++top],*bj=last;
+	p->l=last->l+1;last=p;
+	for(; bj && !bj->son[x] ; bj = bj->fa) bj->son[x] = p;
+	if (!bj) p->fa = head;
+	else if (bj->l+1 == bj->son[x]->l) p->fa = bj->son[x];
+	else{
+		Sam *r = &a[ ++ top],*q = bj->son[x];
+		*r = *q ,r->l= bj->l+1, p->fa = q->fa = r;
+		for( ; bj && bj->son[x] == q; bj = bj->fa) bj->son[x] = r;
+	}
+}
+
+Sam *b[maxn];
+Sam *sta[maxn];
+int dws[maxn];
+void caltimes(int n){ // n = lenstr;
+	int i;
+	for (i = 0; i <= top; ++i) ++dws[a[i].l]; 
+	for (i = 1; i <= n; ++i)	dws[i] += dws[i - 1];   
+	for (i = 0; i <= top; ++i)   b[--dws[a[i].l]] = &a[i];
+	for (last = head, i = 0; i < n; ++i)
+		(last = last->son[ch[i] - 'a'])->cnt++;
+
+	for (i = top; i > 0; --i){
+		b[i]->fa->cnt += b[i]->cnt;
+	}
+}
+
+int main(){
+	scanf("%s",ch);
+	head = last = &a[++top];
+	int n=strlen(ch);
+	fr(i,0,n) add( ch[i] - 'a');
+	int i;
+	caltimes(n);
+	return 0;
+}
+		\end{lstlisting}

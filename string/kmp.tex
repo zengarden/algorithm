@@ -1,0 +1,34 @@
+\subsection{kmp}
+	next[j]的值表示P[0...j-1]中最长后缀的长度等于相同字符序列的前缀。\\
+		j为最远位置使得   mod[0..j-1] == mod[ i - j+1 .. i]\\
+	next 的值就是每个j  nxt往前\\
+	重要的是理解那个往前  \\
+		例：ababa nxt为：0 0 1 2 3\\ 
+		那么nxt[nxt[5]] = nxt[3] = 2;即 s[0..1] = s[2..3]\\
+	
+	性质：Len-nxt[len-1] 就是从0开始最短的串 能重复出整个串，比如 abcabcab  就只需要abc就能重复完\\
+	
+		\begin{lstlisting}[language=c++]
+int len1,len2, nxt[10005];
+char mod[10005], s[1000005];
+void get_nxt(char mod[],int len){ 
+	int i,j=0;
+	nxt[0]=0;
+	for(i=1;i<len;i++){
+		while(j>0 && mod[j]!=mod[i]) j=nxt[j-1]; 
+		if(mod[j]==mod[i]) j++;
+		nxt[i]=j;
+	}
+}
+int KMP(int len1,int len2,char s[],char mod[],int pos = 0)
+{
+	int i=pos,j=0,ret=0;
+	while(i<len1){
+		while(j && mod[j]!=s[i]) j=nxt[j-1];
+		if(mod[j]==s[i++]){
+			if((++j)==(len2)) ret++;
+		}
+	}
+	return ret;
+}
+		\end{lstlisting}

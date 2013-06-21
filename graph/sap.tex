@@ -1,0 +1,93 @@
+\subsection{sap}
+这里是与dinic不同的地方不用每次的bfs 而是充分利用以前的距离标号的信息
+有这个定理：从源点到汇点的最短路一定是用允许弧构成。 
+所以每次扩展路径都找允许弧，
+如果i没有允许弧就更新dis[i] = min  dis[j] + 1 或者 r[i][j] 大于 0) ;
+		\begin{lstlisting}[language=c++]
+#define inf 1000000000
+using namespace std;
+
+const int pN=5000,eN=100000;
+
+struct Edge{
+	int u,v,nxt;
+	int w;
+}e[eN];
+
+int en,head[pN];
+
+void init(){
+	memset(head,-1,sizeof(head));
+	en=0;
+}
+void add(int u,int v,int w){
+	e[en].u=u;e[en].v=v;e[en].w=w;e[en].nxt=head[u];head[u]=en++;
+	e[en].u=v;e[en].v=u;e[en].w=0;e[en].nxt=head[v];head[v]=en++;
+}
+int dep[pN],gap[pN],que[pN]; //gap  每一次重标号时 若出现了断层，则可以证明st无可行流，此时可以直接退出算法
+void BFS(int n,int s,int t){
+	memset(dep,-1,n * sizeof(int));
+	memset(gap, 0 ,n * sizeof (int));
+	gap[0] = 1;
+	int f = 0,r = 0,u,v;
+	dep[ t ] = 0; que[r ++] = t; //从后外前面标号
+	while(f != r){
+		u = que[f ++];
+		if ( f == pN) f = 0;
+		for(int i = head[u];i != -1;i = e[i].nxt){
+			v = e[i].v;
+			if (e[i].w != 0 || dep[v] != -1) continue;  //如果容量为0  就根本到不到它
+			que[ r++ ] = v;
+			if (r == pN) r = 0;
+			dep[ v ] = dep[ u ] + 1;
+			++ gap[dep[ v ]];   //这里的gap就是每一层有多少个点
+		}
+	}
+}
+
+int cur[pN],sta[pN];
+int sap(int n,int s,int t){        //n为总的点个数 包括源点和汇点
+	int flow = 0;
+	BFS(n,s,t);
+	int top = 0,u = s,i;       
+	memcpy(cur,head,n*sizeof(int));   //当前弧
+	while( dep[s] < n){
+		if ( u == t){
+			int tmp = inf;
+			int pos;     
+			for(i = 0;i < top;i++){
+				if (tmp > e[ sta[i] ].w){
+					tmp = e[ sta[i] ].w;
+					pos = i;
+				}
+			}
+			for(i = 0;i < top; ++i){
+				e[ sta[i] ].w -= tmp;
+				e[ sta[i]^1 ].w += tmp;
+			}
+			flow += tmp;
+			top = pos;
+			u = e[sta[top]].u;
+		}
+		if(u != t && gap[dep[u] - 1] == 0)  break;  //gap 优化 出现断层后直接退出
+		for(i = cur[u] ; i != -1 ;i = e[i].nxt)          //当前弧优化  因为以前的弧绝对不满足要求
+			if(e[i].w != 0 && dep[u] == dep[e[i].v] + 1) break;  //找到了一条最短增广路
+		if (i != -1) cur[ u ] = i,sta[top ++] = i, u = e[i].v;   
+		else{                                     
+			//这里与dinic不同
+			int mn = n;
+			for (i = head[u] ;i != -1;i = e[i].nxt){     
+				if ( e[i].w != 0 && mn > dep[ e[i].v ] ){
+					mn = dep[ e[i].v ] ;
+					cur[u] = i;                          
+				}
+			}
+			-- gap[ dep[u] ];  
+			dep[u] = mn + 1;   
+			++ gap[ dep[u] ];  
+			if (u != s) u = e[sta[--top]].u;
+		}
+	}
+	return flow;
+}
+	\end{lstlisting}

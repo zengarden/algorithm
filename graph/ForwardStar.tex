@@ -1,0 +1,19 @@
+\subsection{前向星}
+		\begin{lstlisting}[language=c++]
+const int N = 1010;const int M = 2010;
+struct Edg
+{
+	int u,v,w,nxt; 
+}edg[M];	
+int tote,head[N];
+void init(){
+	tote = 0;
+	memset(head,-1,sizeof(head));
+}
+inline void addedg(int u,int v){
+	edg[tote].u=u;edg[tote].v=v;edg[tote].nxt=head[u];head[u]=tote++;
+};
+inline void addedg(int u,int v,int w){
+	edg[tote].u=u;edg[tote].v=v;edg[tote].w=w;edg[tote].nxt=head[u];head[u]=tote++;
+};
+	\end{lstlisting}

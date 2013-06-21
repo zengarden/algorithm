@@ -1,0 +1,47 @@
+\subsection{动态凸包}
+		\begin{lstlisting}[language=c++]
+const double eps = 1e-9;
+typedef pair<int,int> pii;
+
+struct dynamic_Convex{
+	map<int,int> cvex[2]; //cvex[0] upper contex line, cvex[1] lower convex line
+	map<int,int>::iterator p,q,it;
+	double cross(pii a,pii b,pii c){
+		return (double(b.first - a.first)) * (double(c.second - a.second))
+			- (double(b.second - a.second))*(double(c.first - a.first));
+	}
+	bool IsUnderUpper(map<int,int> &st,int x,int y){  //check if the point is under the upper convex line
+		if( !st.size()) return false;
+		if (x < st.begin()->first || x > (--st.end())->first ) return false;
+		if (st.find(x) != st.end()) return y <= st[x]; 
+		p = st.upper_bound(x);
+		q = p;q--;
+		return !(cross(make_pair(x,y) , *q,*p) > eps);
+	}
+	void insUpperConvex(map<int,int> &st, int x,int y){ //insert a point to upper convex line
+		if( IsUnderUpper(st,x,y) ) return ;
+		st[x] = y;
+		p = st.upper_bound(x);
+		it = p;it--;
+		if ( p!=st.end()){
+			q = p;q++;
+			while(q != st.end() && cross(make_pair(x,y) , *p, *q) >-eps ){
+				st.erase(p);p = q;q++;
+			}
+		}
+		if ( it != st.begin() ){
+			p = it;p--;q = p ;q--;
+			while(p != st.begin() && cross(make_pair(x,y),*q,*p) > -eps){
+				st.erase(p);p = q;q--;
+			}
+		}
+	}
+	bool judge(int x,int y){ //check if the poing is in the convex hull
+		return IsUnderUpper(cvex[0],x,y) && IsUnderUpper(cvex[1],x,-y);
+	}
+	void ins(int x,int y){ //insert a point to convex hull;
+		insUpperConvex(cvex[0],x,y);
+		insUpperConvex(cvex[1],x,-y);
+	}
+}dc;
+	\end{lstlisting}

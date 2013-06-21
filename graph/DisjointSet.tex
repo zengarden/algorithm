@@ -1,0 +1,24 @@
+\subsection{并差集}
+		\begin{lstlisting}[language=c++]
+struct DisjointSet{  
+    int fa[N];  
+    int tot;   
+    void init(int n){  
+        fr(i , 0 ,n){  
+            fa[i] = i;  
+        }  
+        tot = 0;  
+    }  
+    int find(int x){  
+        return x==fa[x]?x:fa[x]=find(fa[x]);  
+    };  
+    void un(int x,int y){  
+        int fx = find(x);  
+        int fy = find(y);  
+        if(fx != fy){  
+            fa[fy] = fx;  
+            tot--;  
+        }  
+    }  
+}DS;  
+	\end{lstlisting}

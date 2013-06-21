@@ -1,0 +1,38 @@
+\subsection{树状数组}
+注意init的时候要小一个1
+		\begin{lstlisting}[language=c++]
+template<int MAXN=300000, typename T = int>
+struct BIT {
+	int n;
+	T a[MAXN];
+
+	void init(int n) {
+		this->n = n;
+		fill(a, a + n + 1, T());
+	}
+	void add(int i, T v) {
+		for (int j = i; j <= n; j = (j | (j - 1)) + 1) {
+			a[j] += v;
+		}
+	}
+	//(0..i];
+	T sum(int i) const { 
+		T ret = T();
+		for (int j = i; j > 0; j = j & (j - 1)) {
+			ret += a[j];
+		}
+		return ret;
+	}
+	T get(int i) const {
+		return sum(i ) - sum(i-1);
+	}
+	void set(int i, T v) {
+		add(i, v - get(i));
+	}
+
+	void add(int l , int r ,T v)  //need sum is ith val;get && set can't use;
+	{
+		add(l,v);add(r+1,-v);
+	}
+}; 
+	\end{lstlisting}

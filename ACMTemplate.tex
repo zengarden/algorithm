@@ -1,0 +1,103 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{makeidx} %制作索引
+\usepackage{indentfirst,amssymb}
+\usepackage{listings} %用于放代码
+\usepackage{pstricks} %Pstricks是非常有效的画图包
+\usepackage{pst-node,pst-tree} %
+\usepackage{graphicx} %提供了一组控制命令，其中最常用的是插图命令
+\usepackage{amsmath}  %美国数学会开发(amsmath宏包)排版的数学公式
+\usepackage{type1cm}  %任意大小西文 (要添加这个才行)
+\usepackage{xcolor}  %改变字体颜色
+\usepackage{fancyhdr} %自定义页眉和页脚。
+\usepackage{booktabs} %latex编写表格
+\usepackage{geometry} %设置页面边距
+\usepackage{xeCJK}
+
+\setCJKmainfont{SimSun}
+\setCJKsansfont{SimSun}
+\setCJKmonofont{SimSun}
+\setCJKsansfont{Source Code Pro}
+
+\geometry{left=3cm,right=1cm,top=1.5cm,bottom=2cm,headsep=0.2cm}
+\lstset{
+	tabsize=4,
+	numbers=left,
+	numberstyle=\sf\normalsize,   %\tiny,                            %\sf\normalsize,
+	keywordstyle=\color{blue!70},                 %\sf\normalsize,
+	commentstyle=\color{red!50!green!50!blue!50}, %\sf\normalsize,
+	rulesepcolor=\color{red!20!green!20!blue!20},
+	frame=leftline,%shadowbox,	
+	escapeinside=``,
+    extendedchars=false
+}
+
+\usepackage[CJKbookmarks=true,
+			colorlinks,
+            linkcolor=black,
+            anchorcolor=black,
+            citecolor=black]{hyperref}
+\AtBeginDvi{\special{pdf:tounicode UTF8-UCS2}}
+
+            
+
+\setlength{\parindent}{0em}
+\begin{document}
+
+%\begin{CJK*}{UTF8}{gbsn}
+	\pagestyle{fancy} %fancyhdr包来设置页眉页脚
+	\lhead{} 
+    \chead{} 
+    \rhead{\bfseries ACM Template}  %\bfseries设置部分文字为黑体字
+    \lfoot{\bfseries zengarden} 
+    \cfoot{}
+    \rfoot{\bfseries\thepage} 
+    \renewcommand{\headrulewidth}{0.4pt}  %newcommand 是定义一个系统不存在的命令，用户为了方便自己可以定义便于自己阅读和使用的命令
+    \renewcommand{\footrulewidth}{0.4pt} %renewcommand是重定义一个命令， 我们可以把系统的已有的命令进行重定义。
+	%\title{ACM Template}
+	%\author{黎泽明}
+	%\date{2013/06/01}
+	%\maketitle    
+    
+    \newgeometry{left=1cm,right=1cm,top=1.5cm,bottom=1.5cm}
+    \begin{titlepage}
+    %~ %强制换页
+	\clearpage
+	\pagestyle{empty}
+	
+        \begin{center}
+        ~\\[160pt]
+        
+        \hrule\ \\[8pt]
+        \fontsize{48pt}{\baselineskip}\selectfont  \textsc{ACM Template}\\[8pt]
+        \hrule\ \\[340pt]
+
+        \huge Zengarden\\[8pt]
+        \Large Last build at \today
+        \end{center}
+    \end{titlepage}
+    \restoregeometry
+    
+    \tableofcontents  %生成目录
+    \clearpage
+    
+    \input{datastructure.tex}
+	\clearpage  %\newpage：  The \newpage command ends the current page. \clearpage：The \clearpage 生成新的页
+	
+	\input{math.tex}
+	\clearpage
+	
+	\input{string.tex}
+	\clearpage
+	
+	\input{graph.tex}
+	\clearpage
+	
+	\input{geometric.tex}
+	\clearpage
+	
+	
+
+%\end{CJK*}
+\printindex
+\end{document}

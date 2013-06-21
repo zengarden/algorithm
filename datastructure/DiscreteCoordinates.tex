@@ -1,0 +1,27 @@
+\subsection{坐标离散}
+	注意下标～\\
+		\begin{lstlisting}[language=c++]
+const int MaxN=100;
+int axis[MaxN];
+int r[MaxN];		//排序用到的数组;
+int mp[MaxN];	//离散值到原始值的映射;
+int M;			//离散值的最大值，[1, M];
+bool cmp(int a, int b)	{return axis[a] < axis[b];}
+void Lisan(int N)
+{
+	for(int i=0; i<N; i++)	r[i] = i;
+	sort(r, r+N, cmp);
+	mp[1] = axis[r[0]];
+	axis[r[0]] = M = 1;
+	for(int i=1; i<N; i++)
+	{
+		if(axis[r[i]] == mp[M])	axis[r[i]] = M;
+		else	mp[++M] = axis[r[i]], axis[r[i]] = M;	
+	}	
+}
+int main(){
+	for (int i=0;i<5;i++) scanf("%d",&axis[i]);
+	Lisan(5);
+	return 0;
+}
+	\end{lstlisting}

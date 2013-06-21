@@ -1,0 +1,104 @@
+\subsection{扫描线 矩形面积并}
+		\begin{lstlisting}[language=c++]
+const int N = 400000;
+int n;
+struct ARR {
+	int a[N];
+	int tot;
+	void init(){tot = 0;}
+	void add(int x){
+		a[tot++] = x;
+	}
+	void uni() {
+		sort(a,a+tot);
+		tot = unique(a,a+tot)-a;
+	}
+	int fd(int x){
+		return lower_bound(a,a+tot,x)-a;
+	}
+}A;
+struct Line{
+	int s,e,y,f;
+	bool operator < (const Line & l) const {
+		if( y == l.y) return s < l.s;
+		return y < l.y;
+	}
+}l[N];
+int tot;
+void add_line(int s,int e,int y,int f){
+	if (s == e) return ;
+	A.add(s);A.add(e);
+	l[tot].s = s;l[tot].e = e;l[tot].y = y;l[tot++].f = f;
+}
+void init(){
+	tot = 0;A.init();
+	sfint(n);
+	int x,y,h;
+	fr(i , 0 ,n){
+		sfint3(x,y,h);
+		add_line(x,y,0,1);
+		add_line(x,y,h,-1);
+	}
+	/*int x1, y1, x2, y2, x3, y3, x4, y4;
+	fr(i , 0 ,n){
+		scanf("%d%d%d%d%d%d%d%d",&x1,&y1,&x2,&y2,&x3,&y3,&x4,&y4);
+		add_line(x1,x3,y1,1); add_line(x1,x3,y2,-1);
+		add_line(x3,x4,y1,1); add_line(x3,x4,y3,-1);
+		add_line(x3,x4,y4,1); add_line(x3,x4,y2,-1);
+		add_line(x4,x2,y1,1); add_line(x4,x2,y2,-1);
+	}*/
+	A.uni();
+}
+
+struct SEGT{
+	struct SEGtr
+	{
+		int l,r,cov;
+		ll len;
+	}tr[N*4];
+	void build(int rt,int l,int r){
+		tr[rt].l = l;tr[rt].r = r;tr[rt].cov = 0;tr[rt].len = 0;
+		if(l == r){
+			return;
+		}
+		int mid = (l+r)>>1;
+		build(rt<<1,l,mid);
+		build(rt<<1|1,mid+1,r);
+	}
+	void up(int rt){
+		if(tr[rt].cov != 0) tr[rt].len = A.a[tr[rt].r+1]-A.a[tr[rt].l];
+		else if( tr[rt].l == tr[rt].r) tr[rt].len = 0;
+		else {
+			tr[rt].len=tr[rt<<1].len+tr[rt<<1|1].len;
+		}
+	}
+	void update(int rt,int l,int r,int add){
+		if(tr[rt].l >= l && tr[rt].r <= r) {
+			tr[rt].cov += add;
+			up(rt);
+			return ;
+		}
+		int mid = (tr[rt].l + tr[rt].r)>>1;
+		if(r <= mid)
+			update(rt<<1,l,r,add);
+		else if(l >mid)
+			update(rt<<1|1,l,r,add);
+		else{
+			update(rt<<1,l,mid,add);
+			update(rt<<1|1,mid+1,r,add);
+		}
+		up(rt);
+	}
+}S;
+void sol(){
+	sort(l,l+tot);
+	S.build(1,0,A.tot-2);
+	S.update(1,A.fd(l[0].s),A.fd(l[0].e)-1,l[0].f);
+	ll ans = 0;
+	fr(i , 1 ,tot){
+		ans += (ll(l[i].y - l[i-1].y))*ll(S.tr[1].len);
+		S.update(1, A.fd(l[i].s),A.fd(l[i].e)-1,l[i].f);
+	}
+	printf("%lld\n",ans);
+}
+		\end{lstlisting}

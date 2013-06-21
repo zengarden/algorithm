@@ -1,0 +1,13 @@
+\subsection{快速加}
+		\begin{lstlisting}[language=c++]
+ll add_mod(ll a,ll b,ll m){
+	ll ans=0;
+	a%=m;
+	while(b){
+		if(b&1) ans=(ans+a)%m;
+		a=(a+a)%m;
+		b>>=1;
+	}
+	return ans%m;
+}
+		\end{lstlisting}
